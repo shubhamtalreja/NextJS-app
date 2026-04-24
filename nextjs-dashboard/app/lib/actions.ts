@@ -3,7 +3,7 @@ import z from 'zod';
 import postgres from 'postgres';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { signIn } from 'next-auth/react';
+import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
 
 const FormSchema = z.object({
@@ -91,7 +91,11 @@ export async function authenticate(
   formData: FormData,
 ) {
   try {
-    await signIn('credentials', formData);
+    await signIn('credentials', {
+      email: formData.get('email'),
+      password: formData.get('password'),
+      redirect: false,
+    });
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
